@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, ChevronDown, Menu, X } from 'lucide-react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import Brand from './Brand.jsx';
 
 const serviceLinks = [
   ['Shopify Development', 'shopify-development'],
@@ -38,10 +39,7 @@ export default function Header({ onQuote }) {
   return (
     <header className={`site-header ${menuOpen ? 'nav-open' : ''}`} id="header">
       <div className="container nav-wrap">
-        <Link to="/" className="brand" aria-label="Tech Berry home" onClick={closeMenu}>
-          <span className="brand-mark" aria-hidden="true">TB</span>
-          <span className="brand-name">Tech Berry</span>
-        </Link>
+        <Brand className="header-brand" onClick={closeMenu} />
 
         <nav className="main-nav" aria-label="Main navigation">
           <ul className="nav-list">

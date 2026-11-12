@@ -1,15 +1,15 @@
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { services } from './Services.jsx';
+import Brand from './Brand.jsx';
 
 export default function Footer() {
   return (
     <footer className="site-footer">
       <div className="container footer-grid">
         <div className="footer-brand">
-          <Link to="/" className="brand footer-brand-row">
-            <span className="brand-mark" aria-hidden="true">TB</span><span className="brand-name">Tech Berry</span>
-          </Link>
+          <Brand className="footer-brand-row" imageClassName="footer-brand-image" loading="lazy" />
+          <p className="footer-tagline">IT Services &amp; Digital Solutions</p>
           <p>We design and build digital experiences that help ambitious businesses move faster, grow smarter and stand out online.</p>
           <div className="social-links" aria-label="Social media">
             <a href="https://facebook.com" aria-label="Facebook"><Facebook size={17} /></a>

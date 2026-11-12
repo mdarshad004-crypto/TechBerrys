@@ -1,13 +1,13 @@
 :root {
-  --primary: #0866e8;
+  --primary: #087bff;
   --electric: #00a8ff;
-  --dark-navy: #071b3d;
+  --dark-navy: #061a3a;
   --deep-blue: #003b85;
   --light-bg: #f4f8ff;
   --white: #ffffff;
-  --text: #101d3a;
+  --text: #061a3a;
   --muted: #596b8a;
-  --purple: #7048ff;
+  --purple: #673de6;
   --soft-blue: #eaf5ff;
   --shadow: rgba(7, 27, 61, 0.18);
   --card-shadow: 0 18px 45px rgba(24, 92, 198, 0.12);
@@ -155,10 +155,24 @@ button {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.8rem;
-  font-weight: 800;
-  color: var(--dark-navy);
-  letter-spacing: -0.04em;
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+
+.brand:hover {
+  transform: translateY(-1px);
+}
+
+.brand-logo {
+  display: block;
+  width: 205px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.header-brand {
+  width: 205px;
 }
 
 .brand-mark {
@@ -1171,8 +1185,21 @@ button {
 }
 
 .footer-brand-row {
-  color: var(--white);
+  width: fit-content;
+  padding: 3px 5px;
+  border-radius: 4px;
+  background: var(--white);
   margin-bottom: 1rem;
+}
+
+.footer-brand-image {
+  width: 205px;
+}
+
+.footer-tagline {
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 600;
+  margin-bottom: 0.6rem;
 }
 
 .footer-brand p {
@@ -1468,6 +1495,10 @@ button {
 }
 
 @media (max-width: 820px) {
+  .header-brand {
+    width: 180px;
+  }
+
   .menu-toggle {
     display: grid;
   }
@@ -1678,6 +1709,10 @@ button {
 }
 
 @media (max-width: 560px) {
+  .header-brand {
+    width: 155px;
+  }
+
   .container {
     width: min(var(--container), calc(100% - 26px));
   }

@@ -5,12 +5,12 @@ export default {
     extend: {
       colors: {
         berry: {
-          blue: '#0866E8',
+          blue: '#087BFF',
           electric: '#00A8FF',
-          navy: '#071B3D',
+          navy: '#061A3A',
           deep: '#003B85',
           light: '#F4F8FF',
-          purple: '#7048FF',
+          purple: '#673DE6',
         },
       },
     },
