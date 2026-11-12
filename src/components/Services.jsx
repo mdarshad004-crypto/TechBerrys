@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import ServiceCard from './ServiceCard.jsx';
+import { revealUp, staggerChildren, viewportOnce } from './motion.js';
 
 export const services = [
   { slug: 'shopify-development', icon: 'shopify', title: 'Shopify Development', description: 'Custom Shopify stores, theme customization, app integration and store optimization.' },
@@ -16,24 +19,45 @@ export default function Services() {
   return (
     <section className="services" id="services">
       <div className="container">
-        <motion.div className="section-header reveal visible" initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <span className="eyebrow eyebrow-blue">OUR SERVICES</span>
-          <h2>Comprehensive IT Services for Your Business</h2>
-          <p>A complete range of digital and technology services to help you build, manage and grow your business online.</p>
+        <motion.div
+          className="section-header reveal visible"
+          variants={revealUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+        >
+          <span className="eyebrow eyebrow-blue">OUR DIGITAL EXPERTISE</span>
+          <h2>Technology Solutions That Move Your Business Forward.</h2>
+          <p>Explore our range of digital and IT services designed to simplify operations, improve performance and accelerate growth.</p>
         </motion.div>
-        <div className="services-grid">
-          {services.map((service, index) => (
+        <motion.div
+          className="services-grid"
+          variants={staggerChildren}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+        >
+          {services.map((service) => (
             <motion.div
               key={service.slug}
-              initial={{ opacity: 0, y: 18 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.35, delay: (index % 4) * 0.05 }}
+              className="service-card-motion"
+              variants={revealUp}
             >
               <ServiceCard service={service} />
             </motion.div>
           ))}
-        </div>
+        </motion.div>
+        <motion.div
+          className="services-explore"
+          variants={revealUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+        >
+          <Link className="services-explore-link" to="/services">
+            Explore All Services <ArrowRight size={18} aria-hidden="true" />
+          </Link>
+        </motion.div>
       </div>
     </section>
   );

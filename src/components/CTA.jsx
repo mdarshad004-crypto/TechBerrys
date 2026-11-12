@@ -1,22 +1,24 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, MessageCircle, Send } from 'lucide-react';
+import { revealUp, staggerChildren, viewportOnce } from './motion.js';
+import { PrimaryButton, SecondaryButton } from './Button.jsx';
 
-export default function CTA({ onQuote }) {
+export default function CTA({ onQuote, onWhatsApp }) {
   return (
     <section className="cta-section">
       <div className="container">
-        <motion.div className="cta-banner reveal visible" initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-          <div className="cta-content">
+        <motion.div className="cta-banner reveal visible" variants={revealUp} initial="hidden" whileInView="visible" viewport={viewportOnce}>
+          <motion.div className="cta-content" variants={staggerChildren} initial="hidden" whileInView="visible" viewport={viewportOnce}>
             <span className="eyebrow eyebrow-light">LET'S BUILD YOUR NEXT MOVE</span>
-            <h2>Have a Project in Mind?</h2>
-            <p>Let's discuss your project and turn your ideas into reality.</p>
-          </div>
-          <div className="cta-actions">
-            <button type="button" className="btn btn-primary btn-light" onClick={onQuote}>Get a Free Quote <ArrowRight size={18} /></button>
-            <a className="btn btn-secondary btn-dark" href="https://wa.me/?text=Hi%20Tech%20Berry%2C%20I%27d%20like%20to%20discuss%20a%20project." target="_blank" rel="noreferrer">
+            <motion.h2 variants={revealUp}>Have a Project in Mind?</motion.h2>
+            <motion.p variants={revealUp}>Let's turn your ideas into powerful digital experiences.</motion.p>
+          </motion.div>
+          <motion.div className="cta-actions" variants={staggerChildren} initial="hidden" whileInView="visible" viewport={viewportOnce}>
+            <PrimaryButton className="btn-light" type="button" onClick={onQuote} variants={revealUp}>Get a Free Quote <ArrowRight size={18} /></PrimaryButton>
+            <SecondaryButton className="btn-dark" type="button" onClick={onWhatsApp} variants={revealUp}>
               <MessageCircle size={18} /> Chat on WhatsApp
-            </a>
-          </div>
+            </SecondaryButton>
+          </motion.div>
           <div className="rocket-icon" aria-hidden="true"><Send size={36} /></div>
         </motion.div>
       </div>

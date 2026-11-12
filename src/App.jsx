@@ -1,64 +1,68 @@
-import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Mail, X } from 'lucide-react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Component, lazy, Suspense, useEffect, useState } from 'react';
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
-import Home from './pages/Home.jsx';
-import { About, Blog, Contact, LegalPage, NotFound, ProjectsPage, ServicePage, ServicesPage } from './pages/InfoPages.jsx';
+import CursorEffects from './components/CursorEffects.jsx';
+import WhatsAppEnquiryDialog from './components/WhatsAppEnquiryDialog.jsx';
+import { motionTransition } from './components/motion.js';
 
-function QuoteDialog({ open, onClose }) {
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+const Home = lazy(() => import('./pages/Home.jsx'));
+const About = lazy(() => import('./pages/InfoPages.jsx').then((module) => ({ default: module.About })));
+const Blog = lazy(() => import('./pages/InfoPages.jsx').then((module) => ({ default: module.Blog })));
+const Contact = lazy(() => import('./pages/InfoPages.jsx').then((module) => ({ default: module.Contact })));
+const LegalPage = lazy(() => import('./pages/InfoPages.jsx').then((module) => ({ default: module.LegalPage })));
+const NotFound = lazy(() => import('./pages/InfoPages.jsx').then((module) => ({ default: module.NotFound })));
+const ProjectsPage = lazy(() => import('./pages/InfoPages.jsx').then((module) => ({ default: module.ProjectsPage })));
+const ShopifyDevelopmentPage = lazy(() => import('./pages/ShopifyDevelopmentPage.jsx'));
+const ShopifyServiceDetailPage = lazy(() => import('./pages/ShopifyServiceDetailPage.jsx'));
+const ServicePage = lazy(() => import('./pages/InfoPages.jsx').then((module) => ({ default: module.ServicePage })));
+const ServicesPage = lazy(() => import('./pages/InfoPages.jsx').then((module) => ({ default: module.ServicesPage })));
+const AdminPage = lazy(() => import('./pages/AdminPage.jsx'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'));
+const TermsConditions = lazy(() => import('./pages/TermsConditions.jsx'));
 
-  if (!open) return null;
-
+function PageLoading() {
   return (
-    <div className="dialog-backdrop" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
-      <motion.section
-        className="quote-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="quote-title"
-        initial={{ opacity: 0, y: 18, scale: 0.97 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 12, scale: 0.98 }}
-      >
-        <button className="dialog-close" type="button" onClick={onClose} aria-label="Close enquiry form">
-          <X size={20} />
-        </button>
-        <span className="eyebrow eyebrow-blue">LET'S TALK</span>
-        <h2 id="quote-title">Tell us about your project</h2>
-        <p>Share a few details and your email app will open with your enquiry ready to send.</p>
-        <form className="enquiry-form" action="mailto:hello@yourcompany.com" method="post" encType="text/plain">
-          <label>
-            Your name
-            <input name="name" autoComplete="name" autoFocus required placeholder="Name" />
-          </label>
-          <label>
-            Email address
-            <input name="email" type="email" autoComplete="email" required placeholder="you@company.com" />
-          </label>
-          <label>
-            What can we help with?
-            <textarea name="project" rows="4" required placeholder="A short overview of your project" />
-          </label>
-          <button className="btn btn-primary" type="submit">
-            <Mail size={17} /> Prepare enquiry
-          </button>
-        </form>
-      </motion.section>
-    </div>
+    <section className="page-loading" role="status" aria-label="Loading page">
+      <span className="page-loading-spinner" aria-hidden="true" />
+      <span>Loading your page...</span>
+      <span className="page-loading-skeleton" aria-hidden="true" />
+    </section>
   );
+}
+
+class PageErrorBoundary extends Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Page failed to render:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <section className="page-error" role="alert">
+          <h1>This page couldn't be loaded.</h1>
+          <p>Try again, or use the navigation to continue browsing TechBerry.</p>
+          <button type="button" className="btn btn-primary" onClick={() => window.location.reload()}>
+            Reload page
+          </button>
+        </section>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 export default function App() {
   const [quoteOpen, setQuoteOpen] = useState(false);
+  const [whatsAppOpen, setWhatsAppOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -66,34 +70,58 @@ export default function App() {
   }, [location.pathname]);
 
   return (
-    <div className="page-shell">
-      <Header onQuote={() => setQuoteOpen(true)} />
-      <AnimatePresence mode="wait">
-        <motion.main
-          key={location.pathname}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -6 }}
-          transition={{ duration: 0.2 }}
-        >
-          <Routes>
-            <Route path="/" element={<Home onQuote={() => setQuoteOpen(true)} />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/services/:slug" element={<ServicePage onQuote={() => setQuoteOpen(true)} />} />
-            <Route path="/projects" element={<ProjectsPage />} />
-            <Route path="/contact" element={<Contact onQuote={() => setQuoteOpen(true)} />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/privacy" element={<LegalPage type="privacy" />} />
-            <Route path="/terms" element={<LegalPage type="terms" />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </motion.main>
-      </AnimatePresence>
-      <Footer />
-      <AnimatePresence>
-        {quoteOpen && <QuoteDialog open={quoteOpen} onClose={() => setQuoteOpen(false)} />}
-      </AnimatePresence>
-    </div>
+    <MotionConfig reducedMotion="user" transition={motionTransition}>
+      <div className="page-shell">
+        <Header onQuote={() => setQuoteOpen(true)} />
+        <main className="route-stage">
+          <AnimatePresence initial={false}>
+            <motion.div
+              className="route-transition"
+              key={location.pathname}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -3 }}
+              transition={{ duration: 0.22, ease: motionTransition.ease }}
+            >
+              <PageErrorBoundary key={location.pathname}>
+                <Suspense fallback={<PageLoading />}>
+                  <Routes location={location}>
+                    <Route path="/" element={<Home onQuote={() => setQuoteOpen(true)} onWhatsApp={() => setWhatsAppOpen(true)} />} />
+                    <Route
+                      path="/about"
+                      element={<About onQuote={() => setQuoteOpen(true)} onWhatsApp={() => setWhatsAppOpen(true)} />}
+                    />
+                    <Route path="/services" element={<ServicesPage />} />
+                    <Route path="/services/shopify-development" element={<ShopifyDevelopmentPage onQuote={() => setQuoteOpen(true)} />} />
+                    <Route path="/services/shopify-theme-customization" element={<ShopifyServiceDetailPage onQuote={() => setQuoteOpen(true)} />} />
+                    <Route path="/services/shopify-app-integration" element={<ShopifyServiceDetailPage onQuote={() => setQuoteOpen(true)} />} />
+                    <Route path="/services/shopify-store-optimization" element={<ShopifyServiceDetailPage onQuote={() => setQuoteOpen(true)} />} />
+                    <Route path="/services/product-collection-setup" element={<ShopifyServiceDetailPage onQuote={() => setQuoteOpen(true)} />} />
+                    <Route path="/services/shopify-store-maintenance" element={<ShopifyServiceDetailPage onQuote={() => setQuoteOpen(true)} />} />
+                    <Route path="/services/:slug" element={<ServicePage onQuote={() => setQuoteOpen(true)} />} />
+                    <Route path="/projects" element={<ProjectsPage onQuote={() => setQuoteOpen(true)} />} />
+                    <Route path="/contact" element={<Contact onQuote={() => setQuoteOpen(true)} />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Route path="/privacy" element={<Navigate to="/privacy-policy" replace />} />
+                    <Route path="/terms" element={<TermsConditions />} />
+                    <Route path="/admin" element={<AdminPage />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </PageErrorBoundary>
+            </motion.div>
+          </AnimatePresence>
+        </main>
+        <Footer />
+        <AnimatePresence>
+          {quoteOpen && <WhatsAppEnquiryDialog mode="quote" onClose={() => setQuoteOpen(false)} />}
+        </AnimatePresence>
+        <AnimatePresence>
+          {whatsAppOpen && <WhatsAppEnquiryDialog onClose={() => setWhatsAppOpen(false)} />}
+        </AnimatePresence>
+        <CursorEffects />
+      </div>
+    </MotionConfig>
   );
 }

@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, ChevronDown, Menu, X } from 'lucide-react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import Brand from './Brand.jsx';
+import { IconButton, PrimaryButton } from './Button.jsx';
+import { motionEase } from './motion.js';
 
 const serviceLinks = [
   ['Shopify Development', 'shopify-development'],
@@ -37,40 +40,78 @@ export default function Header({ onQuote }) {
   };
 
   return (
-    <header className={`site-header ${menuOpen ? 'nav-open' : ''}`} id="header">
+    <motion.header
+      className={`site-header ${menuOpen ? 'nav-open' : ''}`}
+      id="header"
+      initial={{ opacity: 0, y: -12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: motionEase }}
+    >
       <div className="container nav-wrap">
         <Brand className="header-brand" onClick={closeMenu} />
 
         <nav className="main-nav" aria-label="Main navigation">
           <ul className="nav-list">
-            <li><NavLink to="/" end onClick={closeMenu}>Home</NavLink></li>
-            <li className={`nav-dropdown ${servicesOpen ? 'open' : ''}`}>
+            <motion.li initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05, duration: 0.38, ease: motionEase }}>
+              <NavLink to="/" end onClick={closeMenu}>Home</NavLink>
+            </motion.li>
+            <motion.li
+              className={`nav-dropdown ${servicesOpen ? 'open' : ''}`}
+              onMouseEnter={() => setServicesOpen(true)}
+              onMouseLeave={() => setServicesOpen(false)}
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.09, duration: 0.38, ease: motionEase }}
+            >
               <button
                 className="dropdown-trigger"
                 type="button"
                 aria-expanded={servicesOpen}
                 onClick={() => setServicesOpen((open) => !open)}
+                onFocus={() => setServicesOpen(true)}
               >
                 Services <ChevronDown className="caret-icon" size={15} />
               </button>
-              <div className="dropdown-menu" aria-label="Services submenu">
-                {serviceLinks.map(([label, slug]) => (
-                  <Link key={slug} to={`/services/${slug}`} onClick={closeMenu}>{label}</Link>
-                ))}
-              </div>
-            </li>
-            <li><NavLink to="/projects" onClick={closeMenu}>Projects</NavLink></li>
-            <li><NavLink to="/about" onClick={closeMenu}>About</NavLink></li>
-            <li><NavLink to="/blog" onClick={closeMenu}>Blog</NavLink></li>
-            <li><NavLink to="/contact" onClick={closeMenu}>Contact</NavLink></li>
+              <AnimatePresence>
+                {servicesOpen && (
+                  <motion.div
+                    className="dropdown-menu"
+                    aria-label="Services submenu"
+                    initial={{ opacity: 0, y: 7, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 5, scale: 0.98 }}
+                    transition={{ duration: 0.28, ease: motionEase }}
+                  >
+                    {serviceLinks.map(([label, slug]) => (
+                      <Link key={slug} to={`/services/${slug}`} onClick={closeMenu}>{label}</Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.li>
+            {[
+              ['/projects', 'Projects'],
+              ['/about', 'About'],
+              ['/blog', 'Blog'],
+              ['/contact', 'Contact'],
+            ].map(([to, label], index) => (
+              <motion.li
+                key={to}
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.13 + index * 0.04, duration: 0.38, ease: motionEase }}
+              >
+                <NavLink to={to} onClick={closeMenu}>{label}</NavLink>
+              </motion.li>
+            ))}
           </ul>
         </nav>
 
-        <button className="btn btn-primary quote-btn" type="button" onClick={onQuote}>
+        <PrimaryButton className="quote-btn" type="button" onClick={onQuote}>
           Get a Quote <ArrowRight size={17} />
-        </button>
+        </PrimaryButton>
 
-        <button
+        <IconButton
           className={`menu-toggle ${menuOpen ? 'open' : ''}`}
           type="button"
           aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
@@ -78,8 +119,8 @@ export default function Header({ onQuote }) {
           onClick={() => setMenuOpen((open) => !open)}
         >
           {menuOpen ? <X size={21} /> : <Menu size={21} />}
-        </button>
+        </IconButton>
       </div>
-    </header>
+    </motion.header>
   );
 }
